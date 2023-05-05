@@ -1,7 +1,9 @@
 import requests
 
 url = 'http://localhost:5000/predict'
-data = {'input': "test test"}
+
+prompt = "Hi! How are you?"
+data = {'input': prompt+"<|respond|>"}
 
 response = requests.post(url, json=data)
 

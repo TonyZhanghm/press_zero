@@ -1,3 +1,4 @@
 transformers
 sentence-transformers
 faiss-gpu
+protobuf==3.20.* 
