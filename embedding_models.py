@@ -35,6 +35,7 @@ class EmbeddingModel:
             raise Exception('unsupported ' + model_source + ' embedding model')
 
         self.model_source = model_source
+        self.aggregate_strategy = aggregate_strategy
 
         if model_source == 'sentencetransformer':
             self.model = SentenceTransformer(model_name, device='cuda')
@@ -53,9 +54,9 @@ class EmbeddingModel:
         elif self.model_source == 'huggingface':
             tokens = self.tokenizer(text, return_tensors='pt').to('cuda')
             output = self.model(**tokens)
-            if aggregate_strategy == 'mean':
+            if self.aggregate_strategy == 'mean':
                 return torch.mean(output['last_hidden_state'], dim=1).cpu().detach().flatten().numpy()
-            elif aggregate_strategy == 'cls':
+            elif self.aggregate_strategy == 'cls':
                 return output['pooler_output'].cpu().detach().flatten().numpy()
             else:
                 raise Exception ('unsupported aggregate strategy')
