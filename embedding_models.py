@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
+import torch
 import tiktoken
 import openai
 
