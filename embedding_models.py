@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
+from typing import Union, List
 import torch
 import tiktoken
 import openai
@@ -48,10 +49,11 @@ class EmbeddingModel:
                 self.model = self.model.encoder
             self.model = self.model.cuda()
 
-    # TODO: support batch encoding
-    def encode(self, text):
+    # TODO: support batch encoding for huggingface
+    # TODO: add DataParallel
+    def encode(self, text: Union[str, List[str]], batch_size: int):
         if self.model_source == 'sentencetransformer':
-            return self.model.encode(text)
+            return self.model.encode(text, batch_size=batch_size)
         elif self.model_source == 'huggingface':
             tokens = self.tokenizer(text, return_tensors='pt').to('cuda')
             output = self.model(**tokens)
