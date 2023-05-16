@@ -30,13 +30,18 @@ def get_args():
         help="specific pretrained model to use"
     )
     parser.add_argument(
+        "--tokenizer_path",
+        default="none",
+        help="tokenizer path if applicable"
+    )
+    parser.add_argument(
         "--batch_size",
         default=32,
         help="batch size"
     )
     return parser.parse_args()
 
-def build_index(data_folder, outfile, model_source, model_name, batch_size):
+def build_index(data_folder, outfile, model_source, model_name, tokenizer_path, batch_size):
 
     chunks = []
     # TODO: come up with actual chunking strategy
@@ -55,14 +60,13 @@ def build_index(data_folder, outfile, model_source, model_name, batch_size):
         if buffer:
             chunks.append(buffer.strip())
 
-    model = EmbeddingModel(model_source, model_name)
+    model = EmbeddingModel(model_source, model_name, tokenizer_path)
     embeddings = model.encode(chunks, batch_size=batch_size)
 
     if model_source == 'sentencetransformer':
         embedding_dim = model.model.get_sentence_embedding_dimension()
     else:
-        # TODO: support other encoders
-        raise NotImplementedError()
+        embedding_dim = len(embeddings[0])
 
     # TODO: add more faiss options
     index = faiss.IndexFlatL2(embedding_dim)
@@ -78,4 +82,5 @@ if __name__ == "__main__":
                 args.outfile,
                 args.model_source,
                 args.model_name,
+                args.tokenizer_path,
                 int(args.batch_size))
